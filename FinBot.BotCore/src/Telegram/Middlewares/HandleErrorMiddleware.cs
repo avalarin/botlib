@@ -28,10 +28,10 @@ namespace FinBot.BotCore.Telegram.Middlewares {
         private IHandlerResult MapException(Exception e) {
             if (e is NoSuchHandlerException noSuchHandlerException) {
                 _logger.LogInformation("Cannot find handler for message");
-                return HandlerResult.WithText("Unknown command");
+                return HandlerResultCreators.Text("Unknown command");
             }
             _logger.LogError(0, e, "Unexpected error occurred");
-            return HandlerResult.WithText($"Error occured: [{e.GetType().Name}] {e.Message}");
+            return HandlerResultCreators.Text($"Error occured: [{e.GetType().Name}] {e.Message}");
         }
     }
 }
