@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using FinBot.BotCore.Middlewares;
+using FinBot.BotCore.Utils;
 
 namespace FinBot.BotCore.Handlers.Filters {
     public static class FilterUtils {
@@ -18,6 +20,13 @@ namespace FinBot.BotCore.Handlers.Filters {
             if (attribute is IFilter filter) {
                 return filter.FilterAsync(attribute, data);
             }
+
+            var filterImplementationAttribute = attribute.GetType().GetTypeInfo().GetCustomAttribute<FilterImplementationAttribute>();
+            if (filterImplementationAttribute != null) {
+                var instance = (IFilter)serviceProvider.GetInstance(filterImplementationAttribute.ImplementationType);
+                return instance.FilterAsync(attribute, data);
+            }
+
             throw new InvalidOperationException("Cannot invoke filter " + attribute.GetType());
         }
     }
