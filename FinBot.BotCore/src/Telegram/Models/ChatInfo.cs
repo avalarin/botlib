@@ -5,7 +5,7 @@ namespace FinBot.BotCore.Telegram.Models {
     public class ChatInfo {
 
         [JsonProperty(PropertyName = "id", Required = Required.Always)]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [JsonProperty(PropertyName = "type", Required = Required.Always)]
         public ChatType Type { get; set; }
