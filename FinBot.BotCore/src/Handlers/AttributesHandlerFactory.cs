@@ -27,35 +27,43 @@ namespace FinBot.BotCore.Handlers {
                 .ToList();
         } 
         
-        public Task<IHandler> CreateHandlerAsync(MiddlewareData middlewareData) {
-            IHandler handler = _descriptors
-                .Select(d => d.Match(middlewareData, _serviceProvider))
-                .FirstOrDefault(m => m.Successful)
-                .Nullable()
-                .Map(m => new Handler(_serviceProvider, m.Descriptor.Method, m.Values))
-                .OrElseThrow(() => new NoSuchHandlerException());
-            return Task.FromResult(handler);
+        public IEnumerable<IHandler> CreateHandlers(MiddlewareData middlewareData) {
+            return _descriptors
+                .Select(d => d.Match(middlewareData))
+                .Where(m => m.Successful)
+                .Select(m => new Handler(_serviceProvider, _parametersMatcher, m.Descriptor.Method));
         }
 
-        public class Handler : IHandler {
+        private class Handler : IHandler {
             private readonly IServiceProvider _serviceProvider;
+            private readonly IParametersMatcher _parametersMatcher;
             private readonly MethodInfo _method;
-            private readonly ParameterValue[] _values;
 
-            public Handler(IServiceProvider serviceProvider, MethodInfo method, ParameterValue[] values) {
+            public Handler(IServiceProvider serviceProvider, IParametersMatcher parametersMatcher, MethodInfo method) {
                 _serviceProvider = serviceProvider;
+                _parametersMatcher = parametersMatcher;
                 _method = method;
-                _values = values;
             }
 
-            public Task<IHandlerResult> ExecuteAsync(MiddlewareData middlewareData) {
+            public async Task<IHandlerResult> ExecuteAsync(MiddlewareData middlewareData) {
+                var filters = _method.GetCustomAttributes<FilterAttribute>();
+                var filterResult = await FilterUtils.ExecuteFilters(filters, _serviceProvider, middlewareData);
+                if (!filterResult.Successful) {
+                    return null;
+                }
+                
+                var parameters = _parametersMatcher.MatchParameters(filterResult.MiddlewareData.Value, _method.GetParameters());
+                if (!parameters.IsPresent) {
+                    return null;
+                }
+                
                 var instance = _serviceProvider.GetInstance(_method.DeclaringType);
-                var result = _method.Invoke(instance, _values.Select(v => v.Value).ToArray());
+                var result = _method.Invoke(instance, parameters.Value.Select(v => v.Value).ToArray());
                 if (result is Task<IHandlerResult> taskHandlerResult) {
-                    return taskHandlerResult;
+                    return await taskHandlerResult;
                 }
                 if (result is IHandlerResult handlerResult) {
-                    return Task.FromResult(handlerResult);
+                    return handlerResult;
                 }
                 throw new InvalidOperationException("Cannot create result from type " + _method.ReturnType);
             }
