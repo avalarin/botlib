@@ -27,7 +27,7 @@ namespace FinBot.BotCore.Handlers {
             InlineKeyboardButton = inlineKeyboardButton.Nullable();
         }
         
-        public HandlerMatch Match(MiddlewareData middlewareData, IServiceProvider serviceProvider) {
+        public HandlerMatch Match(MiddlewareData middlewareData) {
             var callbackQuery = middlewareData.Features.RequireOne<UpdateInfoFeature>().Update.CallbackQuery.Nullable();
             var command = middlewareData.Features.RequireOne<CommandFeature>().Command;
 
@@ -38,17 +38,9 @@ namespace FinBot.BotCore.Handlers {
             var ikbMatched = InlineKeyboardButton
                 .Map(a => callbackQuery.Map(b => a.Equals(b.Data, StringComparison.OrdinalIgnoreCase)).OrElse(false))
                 .OrElse(false);
-
-//            var filterResult = FilterUtils.ExecuteFilters(Filters, serviceProvider, middlewareData).Result; // TODO async
-//            if (!filterResult.Successful) {
-//                return HandlerMatch.CreateUnmatched();
-//            }
-//            // TODO save middleware data
             
             if (commandMatched || ikbMatched) {
-                return serviceProvider.GetService<IParametersMatcher>().MatchParameters(middlewareData, Method.GetParameters())
-                    .Map(values => HandlerMatch.CreateMatched(this, values))
-                    .OrElseGet(HandlerMatch.CreateUnmatched);
+                return HandlerMatch.CreateMatched(this);
             }
 
             return HandlerMatch.CreateUnmatched();
@@ -64,20 +56,17 @@ namespace FinBot.BotCore.Handlers {
             
             public HandlerDescriptor Descriptor { get; }
 
-            public ParameterValue[] Values { get; }
-
-            private HandlerMatch(bool successful, HandlerDescriptor descriptor, ParameterValue[] values) {
+            private HandlerMatch(bool successful, HandlerDescriptor descriptor) {
                 Successful = successful;
                 Descriptor = descriptor;
-                Values = values;
             }
 
-            public static HandlerMatch CreateMatched(HandlerDescriptor descriptor, ParameterValue[] values) {
-                return new HandlerMatch(true, descriptor, values);
+            public static HandlerMatch CreateMatched(HandlerDescriptor descriptor) {
+                return new HandlerMatch(true, descriptor);
             }
             
             public static HandlerMatch CreateUnmatched() {
-                return new HandlerMatch(false, null, null);
+                return new HandlerMatch(false, null);
             }
         }
 
