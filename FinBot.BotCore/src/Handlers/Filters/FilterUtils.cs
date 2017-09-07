@@ -8,10 +8,11 @@ using FinBot.BotCore.Utils;
 namespace FinBot.BotCore.Handlers.Filters {
     public static class FilterUtils {
         public static async Task<FilterResult> ExecuteFilters(IEnumerable<FilterAttribute> filtets, IServiceProvider serviceProvider, MiddlewareData data) {
-            var result = FilterResult.CreateSuccessful(data);
+            var result = FilterResult.NextFilter(data);
             foreach (var filter in filtets) {
-                result = await ExecuteFilter(serviceProvider, filter, result.MiddlewareData.Value);
-                if (!result.Successful) return result;
+                result = await ExecuteFilter(serviceProvider, filter, result.MiddlewareData
+                    .OrElseThrow(() => new InvalidOperationException("MiddlewareData is required")));
+                if (result.Action != FilterAction.NextFilter) return result;
             }
             return result;
         }

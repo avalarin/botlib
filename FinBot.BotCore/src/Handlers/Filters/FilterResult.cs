@@ -1,25 +1,36 @@
-﻿using FinBot.BotCore.Middlewares;
+﻿using System;
+using FinBot.BotCore.Middlewares;
 using FinBot.BotCore.Utils;
 
 namespace FinBot.BotCore.Handlers.Filters {
     public class FilterResult {
         
-        public bool Successful { get; }
+        public FilterAction Action { get; }
         
         public Maybe<MiddlewareData> MiddlewareData { get; }
 
-        private FilterResult(bool successful, MiddlewareData middlewareData) {
-            Successful = successful;
+        private FilterResult(FilterAction action, MiddlewareData middlewareData) {
+            Action = action;
             MiddlewareData = middlewareData.Nullable();
         }
 
-        public static FilterResult CreateSuccessful(MiddlewareData middlewareData) {
-            return new FilterResult(true, middlewareData);
+        public static FilterResult NextFilter(MiddlewareData middlewareData) {
+            return new FilterResult(FilterAction.NextFilter, middlewareData);
         }
         
-        public static FilterResult CreateUnsuccessful() {
-            return new FilterResult(false, null);
+        public static FilterResult BreakExecution(MiddlewareData middlewareData) {
+            return new FilterResult(FilterAction.BreakExecution, middlewareData);
+        }
+       
+        public static FilterResult SkipHandler() {
+            return new FilterResult(FilterAction.SkipHandler, null);
         }
         
+    }
+
+    public enum FilterAction {
+        NextFilter,
+        BreakExecution,
+        SkipHandler
     }
 }

@@ -9,9 +9,9 @@ namespace FinBot.BotCore.Handlers.Filters {
         public Task<FilterResult> FilterAsync(FilterAttribute attribute, MiddlewareData data) {
             var text = data.Features.RequireOne<UpdateInfoFeature>().GetAnyMessage().Text;
             if (text.Contains(Text)) {
-                return Task.FromResult(FilterResult.CreateSuccessful(data));
+                return Task.FromResult(FilterResult.NextFilter(data));
             }
-            return Task.FromResult(FilterResult.CreateUnsuccessful());
+            return Task.FromResult(FilterResult.SkipHandler());
         }
     }
 }
