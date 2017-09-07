@@ -60,11 +60,7 @@ namespace FinBot.BotCore.Middlewares {
 
                 return result;
             }
-
-            public string Inspect(string current) {
-                return _next.Inspect($"{current} => {(_instance?.GetType() ?? _type).Name}");
-            }
-
+            
             private IMiddleware GetInstance() {
                 if (_instance != null) {
                     return _instance;
@@ -88,19 +84,11 @@ namespace FinBot.BotCore.Middlewares {
                 _stopwatch.Start();
                 return result;
             }
-
-            public string Inspect(string current) {
-                return _next.Inspect(current);
-            }
         }
 
         private class TailElement : IMiddlewaresChain {
             public Task<MiddlewareData> NextAsync(MiddlewareData data) {
                 return Task.FromResult(data);
-            }
-
-            public string Inspect(string current) {
-                return current + " => [TAIL]";
             }
         }
     }
