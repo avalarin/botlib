@@ -3,6 +3,7 @@ using FinBot.BotCore.MongoDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson.Serialization;
 
 namespace FinBot.Application {
     public static class Program {
@@ -13,6 +14,8 @@ namespace FinBot.Application {
                 .AddSingleton<IConfiguration>(new ConfigurationBuilder().AddJsonFile("config.json").Build())
                 .UseTelegramClient()
                 .UseMongoDBStorages()
+                .UseAuthentication()
+                .UseMongoDBAuthentication<ApplicationUser, ApplicationUserFactory>()
                 .UseHandlers()
                 .BuildServiceProvider();
 
@@ -20,5 +23,4 @@ namespace FinBot.Application {
         }
         
     }
-
 }
