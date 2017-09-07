@@ -48,10 +48,16 @@ namespace FinBot.BotCore.Handlers {
             public async Task<IHandlerResult> ExecuteAsync(MiddlewareData middlewareData) {
                 var filters = _method.GetCustomAttributes<FilterAttribute>();
                 var filterResult = await FilterUtils.ExecuteFilters(filters, _serviceProvider, middlewareData);
-                if (!filterResult.Successful) {
+                if (filterResult.Action == FilterAction.SkipHandler) {
                     return null;
                 }
-                
+
+                if (filterResult.Action == FilterAction.BreakExecution) {
+                    return filterResult.MiddlewareData
+                        .Map(HandlerResultCreators.UpdateMiddlewareData)
+                        .OrElseGet(HandlerResultCreators.Empty);
+                }
+
                 var parameters = _parametersMatcher.MatchParameters(filterResult.MiddlewareData.Value, _method.GetParameters());
                 if (!parameters.IsPresent) {
                     return null;
