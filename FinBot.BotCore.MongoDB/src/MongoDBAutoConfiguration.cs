@@ -17,5 +17,6 @@ namespace FinBot.BotCore.MongoDB {
         
         public string ParamsCollection => _configuration["ParamsCollection"];
         
+        public string UsersCollection => _configuration["UsersCollection"];
     }
 }

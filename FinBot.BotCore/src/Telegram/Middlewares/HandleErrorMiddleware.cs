@@ -30,6 +30,10 @@ namespace FinBot.BotCore.Telegram.Middlewares {
                 _logger.LogInformation("Cannot find handler for message");
                 return HandlerResultCreators.Text("Unknown command");
             }
+            if (e is UnauthorizedException unauthorizedException) {
+                _logger.LogInformation("Unauthorized");
+                return HandlerResultCreators.Text("Unauthorized");
+            }
             _logger.LogError(0, e, "Unexpected error occurred");
             return HandlerResultCreators.Text($"Error occured: [{e.GetType().Name}] {e.Message}");
         }
