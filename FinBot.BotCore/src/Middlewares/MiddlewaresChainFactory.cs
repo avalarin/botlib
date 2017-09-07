@@ -56,8 +56,6 @@ namespace FinBot.BotCore.Middlewares {
                 var result = await GetInstance().InvokeAsync(data, new TimerChainElement(sw, _next));
                 sw.Stop();
 
-                _logger.LogDebug($"Middleware {(_instance?.GetType() ?? _type).Name} completed in {sw.ElapsedMilliseconds} ms ()");
-
                 return result;
             }
             
