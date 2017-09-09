@@ -68,8 +68,14 @@ namespace FinBot.BotCore.Handlers {
                 if (result is Task<IHandlerResult> taskHandlerResult) {
                     return await taskHandlerResult;
                 }
+                if (result is Task<IEnumerable<IHandlerResult>> taskHandlerResults) {
+                    return HandlerResultCreators.JoinAll(await taskHandlerResults);
+                }
                 if (result is IHandlerResult handlerResult) {
                     return handlerResult;
+                }
+                if (result is IEnumerable<IHandlerResult> handlerResults) {
+                    return HandlerResultCreators.JoinAll(handlerResults);
                 }
                 throw new InvalidOperationException("Cannot create result from type " + _method.ReturnType);
             }
