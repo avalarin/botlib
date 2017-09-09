@@ -1,5 +1,7 @@
-﻿using System.Net.Security;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using FinBot.BotCore.Context;
 using FinBot.BotCore.Handlers;
 using FinBot.BotCore.ParameterMatching;
 using FinBot.BotCore.Security;
@@ -15,12 +17,33 @@ namespace FinBot.Application.Controllers {
         }
 
         [Handler(Command = "start")]
-        public IHandlerResult Start(MessageInfo message, string token) {
-            return new HandlerResultBuilder()
+        public IEnumerable<IHandlerResult> Start(MessageInfo message, MessageContext messageContext) {
+            yield return new HandlerResultBuilder()
                 .Text($"Привет {message.Chat.UserName}")
                 .InlineKeyboard(b => b.Row(r => r.Button("a", "A").Button("b", "B"))
                                       .Row(r => r.Button("c", "C").Button("d", "D")))
                 .Create();
+            
+            yield return PutToMessageContext("data", $"Текст от {message.Chat.UserName}: ");
+        }
+        
+        [Handler(InlineKeyboardButton = "a")]
+        [Handler(InlineKeyboardButton = "b")]
+        [Handler(InlineKeyboardButton = "c")]
+        [Handler(InlineKeyboardButton = "d")]
+        public IEnumerable<IHandlerResult> InlineButton([StrictName] string callbackQueryData, MessageContext messageContext) {
+            var newData = messageContext.Get<string>("data")
+                .OrElseThrow(() => new InvalidOperationException("data is required"))
+                + callbackQueryData;
+            
+            yield return new HandlerResultBuilder()
+                .UpdateMessage()
+                .Text(newData)
+                .InlineKeyboard(b => b.Row(r => r.Button("a", "A").Button("b", "B"))
+                                      .Row(r => r.Button("c", "C").Button("d", "D")))
+                .Create();
+
+            yield return PutToMessageContext("data", newData);
         }
 
         [Handler(Command = "login")]
@@ -61,10 +84,5 @@ namespace FinBot.Application.Controllers {
             return Text("Только авторизованные попадают сюда");
         }
         
-        [Handler(InlineKeyboardButton = "a")]
-        public IHandlerResult InlineButton([StrictName] string callbackQueryData) {
-            return Text("OK " + callbackQueryData);
-        }
-
     }
 }

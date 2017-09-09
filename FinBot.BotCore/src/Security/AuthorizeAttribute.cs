@@ -15,8 +15,8 @@ namespace FinBot.BotCore.Security {
                 var message = new MessageContent() {
                     Text = "Unauthorized access"
                 };
-                var renderer = new ResponseMessageRenderer(message);
-                var rendererFeature = new ClientRendererFeature(renderer);;
+                var renderer = new SendMessageRenderer(message);
+                var rendererFeature = new ClientRendererFeature(renderer);
                 var result = FilterResult.BreakExecution(data.UpdateFeatures(f => f.Add<ClientRendererFeature>(rendererFeature)));
                 return Task.FromResult(result);
             }
