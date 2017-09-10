@@ -18,15 +18,20 @@ namespace FinBot.BotCore.Telegram.Features {
         }
 
         public IEnumerable<ParameterValue> GetValues() {
+            yield return new ParameterValue("update", Update);
+            
             var message = GetAnyMessage();
-            return (new List<KeyValuePair<string, object>>() {
-                new KeyValuePair<string, object>("update", Update),
-                new KeyValuePair<string, object>("message", message),
-                new KeyValuePair<string, object>("messageText", message?.Text),
-                new KeyValuePair<string, object>("callbackQuery", Update.CallbackQuery),
-                new KeyValuePair<string, object>("callbackQueryData", Update.CallbackQuery?.Data),
-                new KeyValuePair<string, object>("chat", message.Chat)
-            }).Where(kvp => kvp.Value != null).Select(kvp => new ParameterValue(kvp.Key, kvp.Value));
+            if (message != null) {
+                yield return new ParameterValue("message", message);
+                yield return new ParameterValue("messageText", message.Text);
+                yield return new ParameterValue("chat", message.Chat);
+            }
+
+            var callbackQuery = Update.CallbackQuery;
+            if (callbackQuery != null) {
+                yield return new ParameterValue("callbackQuery", callbackQuery);
+                yield return new ParameterValue("callbackQueryData", callbackQuery.Data);
+            }
         }
     }
 }
