@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FinBot.BotCore.Context;
 using FinBot.BotCore.Middlewares;
-using FinBot.BotCore.Utils;
 
 namespace FinBot.BotCore.Handlers {
     public static class HandlerResultCreators {
-
-        public static IHandlerResult Text(string text) {
-            return new HandlerResultBuilder()
-                .Text(text)
-                .Create();
-        }
 
         public static IHandlerResult Join(this IHandlerResult a, IHandlerResult b) {
             return new JoiningHandlerResult(a, b);

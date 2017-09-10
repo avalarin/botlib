@@ -13,7 +13,7 @@ namespace FinBot.BotCore.MongoDB {
             var filter = Builders<BsonDocument>.Filter.Eq("key", "last_update_id");
             var update = Builders<BsonDocument>.Update.Set("value", updateId);
             
-            await GetDatabase().GetCollection<BsonDocument>(Configuration.ContextDataCollection)
+            await GetDatabase().GetCollection<BsonDocument>(Configuration.ParamsCollection)
                 .UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
         }
 

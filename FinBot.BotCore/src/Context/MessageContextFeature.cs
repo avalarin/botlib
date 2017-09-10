@@ -7,28 +7,23 @@ using FinBot.BotCore.Utils;
 namespace FinBot.BotCore.Context {
     public class MessageContextFeature : IFeature, IParameterValuesSource {
         private readonly ImmutableDictionary<string, object> _items;
-        private readonly ImmutableHashSet<long> _messageIds;
+        private readonly ImmutableHashSet<string> _messageIds;
         
-        public string ChatId { get; }
-        
-        public IEnumerable<long> MessageIds => _messageIds;
+        public IEnumerable<string> MessageIds => _messageIds;
 
         public IEnumerable<KeyValuePair<string, object>> Items => _items;
         
-        public MessageContextFeature(string chatId, IEnumerable<long> messageIds, IEnumerable<KeyValuePair<string, object>> items) {
-            ChatId = chatId;
+        public MessageContextFeature(IEnumerable<string> messageIds, IEnumerable<KeyValuePair<string, object>> items) {
             _messageIds = messageIds.ToImmutableHashSet();
             _items = items.ToImmutableDictionary();
         }
         
-        public MessageContextFeature(string chatId, long messageId, IEnumerable<KeyValuePair<string, object>> items) {
-            ChatId = chatId;
-            _messageIds = ImmutableHashSet<long>.Empty.Add(messageId);
+        public MessageContextFeature(string messageId, IEnumerable<KeyValuePair<string, object>> items) {
+            _messageIds = ImmutableHashSet<string>.Empty.Add(messageId);
             _items = items.ToImmutableDictionary();
         }
         
-        private MessageContextFeature(string chatId, ImmutableHashSet<long> messageIds, ImmutableDictionary<string, object> items) {
-            ChatId = chatId;
+        private MessageContextFeature(ImmutableHashSet<string> messageIds, ImmutableDictionary<string, object> items) {
             _messageIds = messageIds;
             _items = items;
         }
@@ -38,11 +33,11 @@ namespace FinBot.BotCore.Context {
         }
 
         public MessageContextFeature Put<T>(string key, T value) {
-            return new MessageContextFeature(ChatId, _messageIds, _items.SetItem(key, value));
+            return new MessageContextFeature(_messageIds, _items.SetItem(key, value));
         }
         
-        public MessageContextFeature PutMessageId(long messageId) {
-            return new MessageContextFeature(ChatId, _messageIds.Add(messageId), _items);
+        public MessageContextFeature PutMessageId(string messageId) {
+            return new MessageContextFeature(_messageIds.Add(messageId), _items);
         }
 
         public IEnumerable<ParameterValue> GetValues() {
