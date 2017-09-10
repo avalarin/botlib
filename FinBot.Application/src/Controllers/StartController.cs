@@ -30,10 +30,7 @@ namespace FinBot.Application.Controllers {
             yield return PutToMessageContext("data", $"Текст от {message.Chat.UserName}: ");
         }
         
-        [Handler(Command = "a", Type = TelegramCommandTypes.InlineKeyboardCommand)]
-        [Handler(Command = "b", Type = TelegramCommandTypes.InlineKeyboardCommand)]
-        [Handler(Command = "c", Type = TelegramCommandTypes.InlineKeyboardCommand)]
-        [Handler(Command = "d", Type = TelegramCommandTypes.InlineKeyboardCommand)]
+        [Handler(CommandPattern = "^[abcd]$", Type = TelegramCommandTypes.InlineKeyboardCommand)]
         public IEnumerable<IHandlerResult> InlineButton([StrictName] string callbackQueryData, MessageContext messageContext) {
             var newData = messageContext.Get<string>("data")
                 .OrElseThrow(() => new InvalidOperationException("data is required"))
@@ -49,7 +46,7 @@ namespace FinBot.Application.Controllers {
             yield return PutToMessageContext("data", newData);
         }
 
-        [Handler(Command = "login")]
+        [Handler(Commands = new[] { "login", "signin" })]
         public async Task<IHandlerResult> Login(ApplicationUser applicationUser) {
             if (applicationUser.Is​Authenticated) {
                 return Text("Уже авторизован");
@@ -60,7 +57,7 @@ namespace FinBot.Application.Controllers {
             return Text("Ты успешно авторизован, " + applicationUser.Id);
         }
         
-        [Handler(Command = "logout")]
+        [Handler(Commands = new[] { "logout", "signout" })]
         public async Task<IHandlerResult> Logout(ApplicationUser applicationUser) {
             if (!applicationUser.Is​Authenticated) {
                 return Text("Не авторизован");
