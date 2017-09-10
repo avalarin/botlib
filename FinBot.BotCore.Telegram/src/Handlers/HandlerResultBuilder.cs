@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FinBot.BotCore.Handlers;
 using FinBot.BotCore.Middlewares;
-using FinBot.BotCore.Telegram.Features;
+using FinBot.BotCore.Rendering;
 using FinBot.BotCore.Telegram.Models;
 using FinBot.BotCore.Telegram.Rendering;
 using FinBot.BotCore.Utils;
 
-namespace FinBot.BotCore.Handlers {
+namespace FinBot.BotCore.Telegram.Handlers {
     public class HandlerResultBuilder {
 
         private string _text;
@@ -66,13 +67,12 @@ namespace FinBot.BotCore.Handlers {
 
                 InlineKeyboardMarkup.Nullable().IfPresent(m => messageContent.ReplyMarkup = m);
 
-                var renderer = new SendMessageRenderer(messageContent) {
+                var message = new TelegramOutMessage(messageContent) {
                     UpdateMessage = Update,
                     MessageId = MessageId,
                     ChatId = ChatId
                 };
-                var newData = data.UpdateFeatures(f => f.Add<ClientRendererFeature>(new ClientRendererFeature(renderer)));
-                return Task.FromResult(newData);
+                return Task.FromResult(data.AddRenderMessageFeature(message));
             }
         
         }

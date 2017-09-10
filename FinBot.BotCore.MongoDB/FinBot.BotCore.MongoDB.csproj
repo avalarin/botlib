@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FinBot.BotCore.Telegram\FinBot.BotCore.Telegram.csproj" />
     <ProjectReference Include="..\FinBot.BotCore\FinBot.BotCore.csproj" />
   </ItemGroup>
   <ItemGroup>

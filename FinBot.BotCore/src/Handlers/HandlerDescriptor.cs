@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using FinBot.BotCore.Handlers.Filters;
+using FinBot.BotCore.Commands;
 using FinBot.BotCore.Middlewares;
-using FinBot.BotCore.ParameterMatching;
-using FinBot.BotCore.Telegram.Commands;
-using FinBot.BotCore.Telegram.Features;
-using FinBot.BotCore.Telegram.Models;
 using FinBot.BotCore.Utils;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FinBot.BotCore.Handlers {
     public class HandlerDescriptor {
@@ -19,27 +10,26 @@ namespace FinBot.BotCore.Handlers {
 
         private Maybe<string> Command { get; }
         
-        private Maybe<string> InlineKeyboardButton { get; }
+        private Maybe<string> Type { get; }
 
-        private HandlerDescriptor(MethodInfo method, string command, string inlineKeyboardButton) {
+        private HandlerDescriptor(MethodInfo method, string command, string type) {
             Method = method;
             Command = command.Nullable();
-            InlineKeyboardButton = inlineKeyboardButton.Nullable();
+            Type = type.Nullable();
         }
         
         public HandlerMatch Match(MiddlewareData middlewareData) {
-            var callbackQuery = middlewareData.Features.RequireOne<UpdateInfoFeature>().Update.CallbackQuery.Nullable();
             var command = middlewareData.Features.RequireOne<CommandFeature>().Command;
 
             var commandMatched = Command
                 .Map(a => command.Command.Map(b => a.Equals(b, StringComparison.OrdinalIgnoreCase)).OrElse(false))
                 .OrElse(false);
 
-            var ikbMatched = InlineKeyboardButton
-                .Map(a => callbackQuery.Map(b => a.Equals(b.Data, StringComparison.OrdinalIgnoreCase)).OrElse(false))
-                .OrElse(false);
-            
-            if (commandMatched || ikbMatched) {
+            var typeMatched = Type
+                .Map(filter => filter.Equals(command.Type, StringComparison.Ordinal))
+                .OrElse(true);
+
+            if (commandMatched && typeMatched) {
                 return HandlerMatch.CreateMatched(this);
             }
 
@@ -47,7 +37,7 @@ namespace FinBot.BotCore.Handlers {
         }
 
         public static HandlerDescriptor Create(MethodInfo method, HandlerAttribute attribute) {
-            return new HandlerDescriptor(method, attribute.Command, attribute.InlineKeyboardButton);
+            return new HandlerDescriptor(method, attribute.Command, attribute.Type);
         }
 
         public class HandlerMatch {

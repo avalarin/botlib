@@ -2,39 +2,38 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FinBot.BotCore.Middlewares;
-using FinBot.BotCore.Telegram.Features;
 
 namespace FinBot.BotCore.Context {
     public class ContextMiddleware : IMiddleware {
         private readonly IContextStorage _storage;
+        private readonly IContextManager _contextManager;
 
-        public ContextMiddleware(IContextStorage storage) {
+        public ContextMiddleware(IContextStorage storage, IContextManager contextManager) {
             _storage = storage;
+            _contextManager = contextManager;
         }
 
         public async Task<MiddlewareData> InvokeAsync(MiddlewareData data, IMiddlewaresChain chain) {
-            var updateInfo = data.Features.RequireOne<UpdateInfoFeature>();
-            var message = updateInfo.GetAnyMessage();
-            var chatContext = await _storage.LoadChatContext(message.Chat.Id);
+            var chatId = _contextManager.GetChatId(data);
+            var messageId = _contextManager.GetMessageId(data);
+            
+            var chatContext = await _storage.LoadChatContext(chatId);
             var messageContext = Enumerable.Empty<KeyValuePair<string, object>>(); 
-                       
-            var contextMessageId = updateInfo.Update.EditedMessage?.Id
-                                ?? updateInfo.Update.EditedChannelPost?.Id
-                                ?? updateInfo.Update.CallbackQuery?.Message.Id;
-            if (contextMessageId != null) {
-                messageContext = await _storage.LoadMessageContext(message.Chat.Id, contextMessageId.Value);
+
+            if (_contextManager.HasMessageContext(data)) {
+                messageContext = await _storage.LoadMessageContext(chatId, messageId);
             }
             
             var newData = data.UpdateFeatures(f => f.AddExclusive<ChatContextFeature>(new ChatContextFeature(chatContext))
-                                                    .AddExclusive<MessageContextFeature>(new MessageContextFeature(message.Chat.Id.ToString(), message.Id, messageContext)));
+                                                    .AddExclusive<MessageContextFeature>(new MessageContextFeature(messageId, messageContext)));
             var resultData = await chain.NextAsync(newData);
 
             var newChatContext = resultData.Features.RequireOne<ChatContextFeature>();
-            await _storage.SaveChatContext(message.Chat.Id, newChatContext.Items);
+            await _storage.SaveChatContext(chatId, newChatContext.Items);
 
             var newMessageContext = resultData.Features.RequireOne<MessageContextFeature>();
-            foreach (var messageId in newMessageContext.MessageIds) {
-                await _storage.SaveMessageContext(message.Chat.Id, messageId, newMessageContext.Items);
+            foreach (var id in newMessageContext.MessageIds) {
+                await _storage.SaveMessageContext(chatId, id, newMessageContext.Items);
             }
             
             return resultData;

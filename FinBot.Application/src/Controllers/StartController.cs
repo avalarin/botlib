@@ -5,8 +5,11 @@ using FinBot.BotCore.Context;
 using FinBot.BotCore.Handlers;
 using FinBot.BotCore.ParameterMatching;
 using FinBot.BotCore.Security;
+using FinBot.BotCore.Telegram.Commands;
+using FinBot.BotCore.Telegram.Handlers;
 using FinBot.BotCore.Telegram.Models;
 using static FinBot.BotCore.Handlers.HandlerResultCreators;
+using static FinBot.BotCore.Telegram.Handlers.TelegramHandlerResultCreators;
 
 namespace FinBot.Application.Controllers {
     public class StartController {
@@ -27,10 +30,10 @@ namespace FinBot.Application.Controllers {
             yield return PutToMessageContext("data", $"Текст от {message.Chat.UserName}: ");
         }
         
-        [Handler(InlineKeyboardButton = "a")]
-        [Handler(InlineKeyboardButton = "b")]
-        [Handler(InlineKeyboardButton = "c")]
-        [Handler(InlineKeyboardButton = "d")]
+        [Handler(Command = "a", Type = TelegramCommandTypes.InlineKeyboardCommand)]
+        [Handler(Command = "b", Type = TelegramCommandTypes.InlineKeyboardCommand)]
+        [Handler(Command = "c", Type = TelegramCommandTypes.InlineKeyboardCommand)]
+        [Handler(Command = "d", Type = TelegramCommandTypes.InlineKeyboardCommand)]
         public IEnumerable<IHandlerResult> InlineButton([StrictName] string callbackQueryData, MessageContext messageContext) {
             var newData = messageContext.Get<string>("data")
                 .OrElseThrow(() => new InvalidOperationException("data is required"))

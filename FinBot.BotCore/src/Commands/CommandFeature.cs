@@ -1,6 +1,6 @@
 ﻿using FinBot.BotCore.Middlewares;
 
-namespace FinBot.BotCore.Telegram.Commands {
+namespace FinBot.BotCore.Commands {
     public class CommandFeature : IFeature {
 
         public CommandInfo Command { get; }

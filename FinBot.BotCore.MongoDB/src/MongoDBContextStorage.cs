@@ -12,20 +12,20 @@ namespace FinBot.BotCore.MongoDB {
         public MongoDBContextStorage(IMongoDBConfiguration configuration) : base(configuration) {
         }
 
-        public Task<IEnumerable<KeyValuePair<string, object>>> LoadChatContext(long fromId) {
-            return LoadContext(FilterForChat(fromId));
+        public Task<IEnumerable<KeyValuePair<string, object>>> LoadChatContext(string chatId) {
+            return LoadContext(FilterForChat(chatId));
         }
 
-        public Task<IEnumerable<KeyValuePair<string, object>>> LoadMessageContext(long fromId, long messageId) {
-            return LoadContext(FilterForMessage(fromId, messageId));
+        public Task<IEnumerable<KeyValuePair<string, object>>> LoadMessageContext(string chatId, string messageId) {
+            return LoadContext(FilterForMessage(chatId, messageId));
         }
         
-        public Task SaveChatContext(long fromId, IEnumerable<KeyValuePair<string, object>> context) {
-            return SaveContext(FilterForChat(fromId), context);
+        public Task SaveChatContext(string chatId, IEnumerable<KeyValuePair<string, object>> context) {
+            return SaveContext(FilterForChat(chatId), context);
         }
 
-        public Task SaveMessageContext(long fromId, long messageId, IEnumerable<KeyValuePair<string, object>> context) {
-            return SaveContext(FilterForMessage(fromId, messageId), context);
+        public Task SaveMessageContext(string chatId, string messageId, IEnumerable<KeyValuePair<string, object>> context) {
+            return SaveContext(FilterForMessage(chatId, messageId), context);
         }
 
         private async Task<IEnumerable<KeyValuePair<string, object>>> LoadContext(FilterDefinition<BsonDocument> filter) {
@@ -66,16 +66,16 @@ namespace FinBot.BotCore.MongoDB {
             return payload.Select(element => new KeyValuePair<string, object>(element.Name, BsonTypeMapper.MapToDotNetValue(element.Value)));
         }
         
-        private static FilterDefinition<BsonDocument> FilterForChat(long fromId) {
+        private static FilterDefinition<BsonDocument> FilterForChat(string chatId) {
             return Builders<BsonDocument>.Filter.And(
-                Builders<BsonDocument>.Filter.Eq("from_id", fromId),
+                Builders<BsonDocument>.Filter.Eq("chat_id", chatId),
                 Builders<BsonDocument>.Filter.Eq("context", "chat")
             );
         }
 
-        private static FilterDefinition<BsonDocument> FilterForMessage(long fromId, long messageId) {
+        private static FilterDefinition<BsonDocument> FilterForMessage(string chatId, string messageId) {
             return Builders<BsonDocument>.Filter.And(
-                Builders<BsonDocument>.Filter.Eq("from_id", fromId),
+                Builders<BsonDocument>.Filter.Eq("chat_id", chatId),
                 Builders<BsonDocument>.Filter.Eq("context", "message"),
                 Builders<BsonDocument>.Filter.Eq("message_id", messageId)
             );

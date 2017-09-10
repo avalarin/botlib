@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FinBot.BotCore.Middlewares;
 
-namespace FinBot.BotCore.Telegram.Commands {
+namespace FinBot.BotCore.Commands {
     public class ParseCommandMiddleware : IMiddleware {
         private readonly ICommandParser _commandParser;
 
@@ -11,7 +10,7 @@ namespace FinBot.BotCore.Telegram.Commands {
         }
 
         public async Task<MiddlewareData> InvokeAsync(MiddlewareData data, IMiddlewaresChain chain) {
-            var commandInfo = await _commandParser.Parse(data);
+            var commandInfo = await _commandParser.ParseAsync(data);
             var newData = data.UpdateFeatures(f => f.Add<CommandFeature>(new CommandFeature(commandInfo)));
             return await chain.NextAsync(newData);
         }

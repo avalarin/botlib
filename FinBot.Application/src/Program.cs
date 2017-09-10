@@ -1,9 +1,9 @@
 ﻿using FinBot.BotCore;
 using FinBot.BotCore.MongoDB;
+using FinBot.BotCore.Telegram;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson.Serialization;
 
 namespace FinBot.Application {
     public static class Program {
