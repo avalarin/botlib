@@ -50,7 +50,7 @@ namespace FinBot.BotCore.Telegram.Polling {
         public void Stop(TimeSpan? timeout = null) {
             _logger.LogInformation("Auto polling task is stopping...");
             _cancellationTokenSource.Cancel();
-            _task.Wait();
+            _task.Wait(timeout ?? TimeSpan.FromSeconds(5));
         }
 
         private async Task Pooling(CancellationToken cancellationToken) {

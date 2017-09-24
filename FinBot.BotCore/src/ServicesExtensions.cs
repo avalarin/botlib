@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FinBot.BotCore.Commands;
 using FinBot.BotCore.Context;
 using FinBot.BotCore.Errors;
@@ -9,13 +10,22 @@ using FinBot.BotCore.ParameterMatching;
 using FinBot.BotCore.Rendering;
 using FinBot.BotCore.Security;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace FinBot.BotCore {
     public static class ServicesExtensions {
+        
         private static IServiceCollection AddMiddlewareHolder(
             this IServiceCollection services, int order,
             Func<MiddlewaresChainBuilder, MiddlewaresChainBuilder> modifier) {
 
+            services.TryAddSingleton(provider => {
+                return provider.GetServices<IMiddlewareHolder>()
+                    .OrderBy(h => h.Order)
+                    .Aggregate(new MiddlewaresChainBuilder(), (chain, holder) => holder.AppendMiddlewares(chain))
+                    .Build(new MiddlewaresChainFactory(provider));
+            });
+            
             return services.AddSingleton<IMiddlewareHolder>(new MiddlewareHolder(order, modifier));
         }
         

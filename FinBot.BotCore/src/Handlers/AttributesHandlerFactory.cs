@@ -65,12 +65,14 @@ namespace FinBot.BotCore.Handlers {
                 
                 var instance = _serviceProvider.GetInstance(_method.DeclaringType);
                 var result = _method.Invoke(instance, parameters.Value.Select(v => v.Value).ToArray());
-                if (result is Task<IHandlerResult> taskHandlerResult) {
-                    return await taskHandlerResult;
+                
+                if (result is Task task) {
+                    return await task.ContinueWith(PrepareResult);
                 }
-                if (result is Task<IEnumerable<IHandlerResult>> taskHandlerResults) {
-                    return HandlerResultCreators.JoinAll(await taskHandlerResults);
-                }
+                return PrepareResult(result);
+            }
+
+            private IHandlerResult PrepareResult(object result) {
                 if (result is IHandlerResult handlerResult) {
                     return handlerResult;
                 }
@@ -79,6 +81,7 @@ namespace FinBot.BotCore.Handlers {
                 }
                 throw new InvalidOperationException("Cannot create result from type " + _method.ReturnType);
             }
+            
         }
          
     }

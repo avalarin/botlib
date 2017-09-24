@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using FinBot.BotCore.Middlewares;
 using FinBot.BotCore.Telegram.Features;
 using FinBot.BotCore.Telegram.Models;
+using FinBot.BotCore.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace FinBot.BotCore {
+namespace FinBot.BotCore.Telegram {
     public class BotApplication {
         private readonly ConcurrentQueue<UpdateInfo> _updatesQueue;
         private readonly ILogger _logger;
@@ -20,12 +21,10 @@ namespace FinBot.BotCore {
         private CancellationTokenSource _cancellationTokenSource;
         private Task _runningTask;
 
-        public BotApplication(IServiceProvider services, IMiddlewaresChain middlewares) {
+        public BotApplication(IMiddlewaresChain middlewares, ILogger<BotApplication> logger) {
             _updatesQueue = new ConcurrentQueue<UpdateInfo>();
             _middlewares = middlewares;
-
-            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-            _logger = loggerFactory.CreateLogger(GetType());
+            _logger = logger;
         }
 
         public void Start() {
@@ -67,7 +66,7 @@ namespace FinBot.BotCore {
             Start();
             
             Console.Write("Press any key to stop the application");
-            Console.ReadLine();
+            Console.ReadKey();
 
             StopAsync().Wait();
         }
@@ -104,12 +103,7 @@ namespace FinBot.BotCore {
         }
 
         public static BotApplication Create(IServiceProvider services) {
-            var middlewares = services.GetServices<IMiddlewareHolder>()
-                .OrderBy(h => h.Order)
-                .Aggregate(new MiddlewaresChainBuilder(), (chain, holder) => holder.AppendMiddlewares(chain))
-                .Build(new MiddlewaresChainFactory(services));
-            
-            return new AutoPollingBotApplication(services, middlewares);
+            return services.GetInstance<AutoPollingBotApplication>();
         }
         
     }

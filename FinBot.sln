@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinBot.Core", "FinBot.Core/FinBot.Core.csproj", "{6003895D-10E7-4C6E-82B2-73A50A12B24F}"
-EndProject
 Project("{E5F9AFCA-21D6-4AFA-A686-E8D94B733013}") = "FinBot.Application", "FinBot.Application\FinBot.Application.csproj", "{6CB5F8F8-C4EA-42CA-AEFB-AEED39199CF2}"
 EndProject
 Project("{2DC06121-BA31-42A6-AD88-64823471AF53}") = "FinBot.BotCore", "FinBot.BotCore\FinBot.BotCore.csproj", "{14B1AE12-0FF5-4182-A375-C54390B4C5EC}"
@@ -19,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6003895D-10E7-4C6E-82B2-73A50A12B24F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6003895D-10E7-4C6E-82B2-73A50A12B24F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6003895D-10E7-4C6E-82B2-73A50A12B24F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6003895D-10E7-4C6E-82B2-73A50A12B24F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6CB5F8F8-C4EA-42CA-AEFB-AEED39199CF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6CB5F8F8-C4EA-42CA-AEFB-AEED39199CF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CB5F8F8-C4EA-42CA-AEFB-AEED39199CF2}.Release|Any CPU.ActiveCfg = Release|Any CPU

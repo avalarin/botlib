@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace FinBot.BotCore.Utils {
     public static class EnumerableExtensions {
+        
         public static void ForEach<T>(this IEnumerable<T> src, Action<T> supplier) {
             foreach (var item in src) {
                 supplier(item);
@@ -19,5 +20,6 @@ namespace FinBot.BotCore.Utils {
         public static string JoinToString<T>(this IEnumerable<T> src, string separator) {
             return string.Join(separator, src);
         }
+
     }
 }

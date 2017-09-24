@@ -29,7 +29,7 @@ namespace FinBot.BotCore.MongoDB {
         }
 
         private async Task<IEnumerable<KeyValuePair<string, object>>> LoadContext(FilterDefinition<BsonDocument> filter) {
-            var result = await GetDatabase().GetCollection<BsonDocument>(Configuration.ContextDataCollection)
+            var result = await GetDatabase().GetCollection<BsonDocument>(CollectionNames.ContextDataCollection)
                 .Find(filter)
                 .FirstOrDefaultAsync();
 
@@ -43,11 +43,11 @@ namespace FinBot.BotCore.MongoDB {
             var items = context.ToList();
             
             if (!items.Any()) {
-                return GetDatabase().GetCollection<BsonDocument>(Configuration.ContextDataCollection)
+                return GetDatabase().GetCollection<BsonDocument>(CollectionNames.ContextDataCollection)
                     .DeleteOneAsync(filter);
             }
             
-            return GetDatabase().GetCollection<BsonDocument>(Configuration.ContextDataCollection)
+            return GetDatabase().GetCollection<BsonDocument>(CollectionNames.ContextDataCollection)
                 .UpdateOneAsync(
                     filter: filter, 
                     update: Builders<BsonDocument>.Update.Set("payload", new BsonDocument(items)),

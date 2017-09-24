@@ -12,6 +12,7 @@ using MongoDB.Driver;
 
 namespace FinBot.BotCore.MongoDB {
     public class MongoDBAuthenticationHandler<T> : MongoStorage, IAuthenticationHandler where T : IMongoDBIdentity {
+        
         private readonly IIdentiryFactory _identityFactory;
 
         public MongoDBAuthenticationHandler(IMongoDBConfiguration configuration, IIdentiryFactory identityFactory) : base(configuration) {
@@ -28,7 +29,7 @@ namespace FinBot.BotCore.MongoDB {
             var newUser = await _identityFactory.CreateIdentityAsync(principal);
             var update = new BsonDocument {{ "$setOnInsert", newUser.ToBsonDocument() }};
             
-            IIdentity identity = await GetDatabase().GetCollection<T>(Configuration.UsersCollection)
+            IIdentity identity = await GetDatabase().GetCollection<T>(CollectionNames.UsersCollection)
                 .FindOneAndUpdateAsync(
                     filter: filter,
                     update: update,
@@ -41,6 +42,5 @@ namespace FinBot.BotCore.MongoDB {
             return identity.NotNull();
         }
 
-        
     }
 }
