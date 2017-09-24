@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BotLib.Core\BotLib.Core.csproj" />
+    <ProjectReference Include="..\BotLib.Telegram\BotLib.Telegram.csproj">
+      <Project>{CAF816D2-D6D8-4A0B-A29B-A4B8B42CB4AB}</Project>
+      <Name>BotLib.Telegram</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\..\..\.nuget\packages\microsoft.extensions.configuration.abstractions\2.0.0-preview1-final\lib\netstandard1.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\..\..\.nuget\packages\microsoft.extensions.dependencyinjection.abstractions\2.0.0-preview1-final\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.4.4" />
+  </ItemGroup>
+</Project>
