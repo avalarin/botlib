@@ -1,0 +1,28 @@
+FROM microsoft/dotnet:1.1.1-sdk
+
+ARG CONFIGURATION=Release
+ARG NUGET_PUSH=no
+ARG NUGET_SOURCE=https://www.nuget.org/api/v2/package
+ARG NUGET_API_KEY=
+
+ENV SOURCES=/opt/sources
+ENV ARTIFACTS=/opt/artifacts
+
+ADD *.sln /opt/sources/
+ADD BotLib.Core/*.csproj $SOURCES/BotLib.Core/
+ADD BotLib.Telegram/*.csproj $SOURCES/BotLib.Telegram/
+ADD BotLib.MongoDB/*.csproj $SOURCES/BotLib.MongoDB/
+ADD BotLib.Example/*.csproj $SOURCES/BotLib.Example/
+
+WORKDIR $SOURCES
+
+RUN dotnet restore
+
+ADD . $SOURCES/
+RUN  dotnet pack BotLib.Core/BotLib.Core.csproj -c $CONFIGURATION -o $ARTIFACTS \
+ && dotnet pack BotLib.Telegram/BotLib.Telegram.csproj -c $CONFIGURATION -o $ARTIFACTS \
+ && dotnet pack BotLib.MongoDB/BotLib.MongoDB.csproj -c $CONFIGURATION -o $ARTIFACTS
+
+VOLUME /opt/artifacts
+
+RUN if [ $NUGET_PUSH = 'yes' ]; then find $ARTIFACTS -name *.nupkg | xargs -I {}  dotnet nuget push {} --source $NUGET_SOURCE --api-key $NUGET_API_KEY; fi
