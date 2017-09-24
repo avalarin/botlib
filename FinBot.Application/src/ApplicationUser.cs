@@ -1,6 +1,5 @@
 ﻿using System;
 using FinBot.BotCore.MongoDB;
-using FinBot.BotCore.Security;
 using FinBot.BotCore.Telegram.Security;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
