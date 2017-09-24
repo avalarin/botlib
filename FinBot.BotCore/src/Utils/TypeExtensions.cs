@@ -45,5 +45,6 @@ namespace FinBot.BotCore.Utils {
             }
             return matched;
         }
+
     }
 }

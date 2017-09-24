@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FinBot.BotCore.Utils {
+﻿namespace FinBot.BotCore.Utils {
     public static class MaybeExtensions {
 
         public static Maybe<T> Nullable<T>(this T self) {

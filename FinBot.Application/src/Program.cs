@@ -11,6 +11,7 @@ namespace FinBot.Application {
         private static void Main() {
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<ILoggerFactory>(new LoggerFactory().AddConsole())
+                .AddLogging()
                 .AddSingleton<IConfiguration>(new ConfigurationBuilder().AddJsonFile("config.json").Build())
                 .UseTelegramClient()
                 .UseMongoDBStorages()

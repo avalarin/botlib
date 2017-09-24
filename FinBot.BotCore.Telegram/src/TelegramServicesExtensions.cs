@@ -15,6 +15,7 @@ namespace FinBot.BotCore.Telegram {
         
         public static IServiceCollection UseTelegramClient(this IServiceCollection services) {
             return services.AddSingleton<ITelegramClient, TelegramClient>()
+                .AddSingleton<AutoPoller>()
                 .AddSingleton<IAutoPollerConfiguration, AutoPollerAutoConfiguration>()
                 .AddSingleton<IClientConfiguration, ClientAutoConfiguration>()
                 .AddSingleton<ICommandParser, TelegramCommandParser>()

@@ -12,11 +12,6 @@ namespace FinBot.BotCore.MongoDB {
         public string ConnectionString => _configuration["ConnectionString"];
         
         public string Database => _configuration["Database"];
-        
-        public string ContextDataCollection => _configuration["ContextDataCollection"];
-        
-        public string ParamsCollection => _configuration["ParamsCollection"];
-        
-        public string UsersCollection => _configuration["UsersCollection"];
+
     }
 }

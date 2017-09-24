@@ -6,6 +6,7 @@ using MongoDB.Driver;
 
 namespace FinBot.BotCore.MongoDB {
     public class MongoDBIdentityStorage : MongoStorage, IIdentityStorage {
+        
         public MongoDBIdentityStorage(IMongoDBConfiguration configuration) : base(configuration) {
         }
 
@@ -18,7 +19,7 @@ namespace FinBot.BotCore.MongoDB {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", mongoUser.Id);
             var update = new BsonDocument {{ "$set", mongoUser.ToBsonDocument() }};
 
-            await GetDatabase().GetCollection<BsonDocument>(Configuration.UsersCollection)
+            await GetDatabase().GetCollection<BsonDocument>(CollectionNames.UsersCollection)
                 .UpdateOneAsync(
                     filter: filter,
                     update: update

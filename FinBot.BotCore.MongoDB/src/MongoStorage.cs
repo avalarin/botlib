@@ -2,6 +2,7 @@
 
 namespace FinBot.BotCore.MongoDB {
     public class MongoStorage {
+        
         protected IMongoDBConfiguration Configuration { get; }
 
         public MongoStorage(IMongoDBConfiguration configuration) {
@@ -12,5 +13,6 @@ namespace FinBot.BotCore.MongoDB {
             return new MongoClient(Configuration.ConnectionString)
                 .GetDatabase(Configuration.Database);
         }
+        
     }
 }

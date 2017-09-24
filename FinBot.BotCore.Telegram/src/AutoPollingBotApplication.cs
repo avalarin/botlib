@@ -1,18 +1,20 @@
-﻿using System;
-using FinBot.BotCore.Middlewares;
+﻿using FinBot.BotCore.Middlewares;
 using FinBot.BotCore.Telegram.Polling;
-using FinBot.BotCore.Utils;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-namespace FinBot.BotCore {
+namespace FinBot.BotCore.Telegram {
     public class AutoPollingBotApplication : BotApplication {
-
         private readonly AutoPoller _autoPoller;
         private readonly IAutoPollerConfiguration _autoPollerConfiguration;
         
-        public AutoPollingBotApplication(IServiceProvider services, IMiddlewaresChain middlewares) : base(services, middlewares) {
-            _autoPollerConfiguration = services.GetService<IAutoPollerConfiguration>();
-            _autoPoller = services.GetInstance<AutoPoller>();
+        public AutoPollingBotApplication(
+            IMiddlewaresChain middlewares,
+            IAutoPollerConfiguration autoPollerConfiguration,
+            AutoPoller autoPoller,
+            ILogger<AutoPollingBotApplication> logger
+        ) : base(middlewares, logger) {
+            _autoPollerConfiguration = autoPollerConfiguration;
+            _autoPoller = autoPoller;
             _autoPoller.UpdateReceived += (sender, eventArgs) => EnqueueUpdate(eventArgs.Update);
         }
 
