@@ -7,6 +7,7 @@ ARG NUGET_API_KEY=
 
 ENV SOURCES=/opt/sources
 ENV ARTIFACTS=/opt/artifacts
+ENV DOTNET_OPTIONS="-c $CONFIGURATION -o $ARTIFACTS"
 
 ADD *.sln /opt/sources/
 ADD BotLib.Core/*.csproj $SOURCES/BotLib.Core/
@@ -15,14 +16,12 @@ ADD BotLib.MongoDB/*.csproj $SOURCES/BotLib.MongoDB/
 ADD BotLib.Example/*.csproj $SOURCES/BotLib.Example/
 
 WORKDIR $SOURCES
-
 RUN dotnet restore
 
 ADD . $SOURCES/
-RUN  dotnet pack BotLib.Core/BotLib.Core.csproj -c $CONFIGURATION -o $ARTIFACTS \
- && dotnet pack BotLib.Telegram/BotLib.Telegram.csproj -c $CONFIGURATION -o $ARTIFACTS \
- && dotnet pack BotLib.MongoDB/BotLib.MongoDB.csproj -c $CONFIGURATION -o $ARTIFACTS
+
+RUN dotnet build $DOTNET_OPTIONS && dotnet pack $DOTNET_OPTIONS
 
 VOLUME /opt/artifacts
 
-RUN if [ $NUGET_PUSH = 'yes' ]; then find $ARTIFACTS -name *.nupkg | xargs -I {}  dotnet nuget push {} --source $NUGET_SOURCE --api-key $NUGET_API_KEY; fi
+RUN if [ $NUGET_PUSH = 'yes' ]; then find $ARTIFACTS -name '*.nupkg' | xargs -I {}  dotnet nuget push {} --source $NUGET_SOURCE --api-key $NUGET_API_KEY; fi
