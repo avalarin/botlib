@@ -7,6 +7,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration">
       <Version>2.0.0-preview1-final</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0-preview2-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json">
       <Version>2.0.0-preview1-final</Version>
     </PackageReference>
