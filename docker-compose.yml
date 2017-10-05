@@ -6,6 +6,7 @@ services:
       dockerfile: ./build/Dockerfile.build
     command: dotnet /opt/artifacts/BotLib.Example.dll
     environment:
+      BOT_CONFIG_DIR: /opt/artifacts
       BOT_Telegram__Client__Token: "251694028:AAEVxvIpW03jEI7xSIYL2tjZ7MudKxqEGqE"
       BOT_Mongo__ConnectionString: "mongodb://mongo:27017"
   mongo:
