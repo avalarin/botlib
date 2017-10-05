@@ -32,7 +32,7 @@ namespace BotLib.Telegram {
                 _cancellationTokenSource = new CancellationTokenSource();
 
                 try {
-                    _runningTask = ProcessUpdates(_cancellationTokenSource.Token);
+                    _runningTask = ProcessUpdates(_cancellationTokenSource.Token).RethrowExceptions();
 
                     _logger.LogInformation("Application started...");
                     
@@ -60,13 +60,9 @@ namespace BotLib.Telegram {
             }
         }
 
-        public void StartAndLock() {
+        public void StartAndWait() {
             Start();
-            
-            Console.Write("Press any key to stop the application");
-            Console.ReadKey();
-
-            StopAsync().Wait();
+            _runningTask.Wait();
         }
         
         public void EnqueueUpdate(UpdateInfo updateInfo) {

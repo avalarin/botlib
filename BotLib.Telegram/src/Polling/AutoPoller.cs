@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BotLib.Core.Utils;
 using BotLib.Telegram.Client;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -42,7 +43,7 @@ namespace BotLib.Telegram.Polling {
             lock (_lock) {
                 if (_task != null) throw new InvalidOperationException("Already enabled");
                 _cancellationTokenSource = new CancellationTokenSource();
-                _task = Pooling(_cancellationTokenSource.Token);
+                _task = Pooling(_cancellationTokenSource.Token).RethrowExceptions();
                 _logger.LogInformation("Auto polling task has been started");
             }
         }
@@ -53,10 +54,17 @@ namespace BotLib.Telegram.Polling {
             _task.Wait(timeout ?? TimeSpan.FromSeconds(5));
         }
 
-        private async Task Pooling(CancellationToken cancellationToken) {
+        private async Task  Pooling(CancellationToken cancellationToken) {
             await Task.Yield();
 
-            _offset = (await _historyStorage.GetLastUpdateId()) + 1;
+            try {
+                _logger.LogDebug("Fetching last update id from history storage");
+                _offset = (await _historyStorage.GetLastUpdateId()) + 1;
+            }
+            catch (Exception e) {
+                _logger.LogError(0, e, "Cannot fetch last update id");
+                throw;
+            }
 
             while (!cancellationToken.IsCancellationRequested) {
                 try {

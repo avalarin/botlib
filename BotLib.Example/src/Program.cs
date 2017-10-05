@@ -7,19 +7,14 @@ using BotLib.Telegram;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace BotLib.Example {
     public static class Program {
         
         private static void Main() {
-            Console.WriteLine("Starting");
-            foreach (var v in Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()) {
-                Console.WriteLine($"{v.Key}={v.Value}");
-            }
-            
             IServiceProvider serviceProvider = new ServiceCollection()
-                .AddSingleton<ILoggerFactory>(new LoggerFactory().AddConsole())
-                .AddLogging()
+                .AddLogging(b => b.SetMinimumLevel(LogLevel.Trace).AddNLog())
                 .AddSingleton<IConfiguration>(new ConfigurationBuilder()
                     .AddJsonFile("config.json")
                     .AddJsonFile("secret.json", true)
@@ -32,7 +27,7 @@ namespace BotLib.Example {
                 .UseHandlers()
                 .BuildServiceProvider();
 
-            BotApplication.Create(serviceProvider).StartAndLock();
+            BotApplication.Create(serviceProvider).StartAndWait();
         }
         
     }

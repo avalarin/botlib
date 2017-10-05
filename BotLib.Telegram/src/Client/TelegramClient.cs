@@ -100,7 +100,7 @@ namespace BotLib.Telegram.Client {
                     HttpResponseMessage response;
 
                     if (payload == null) {
-                        _logger.LogDebug($"GET {uri}");
+                        _logger.LogDebug($"GET /{method}");
                         response = await client.GetAsync(uri, cancellationToken)
                                                .ConfigureAwait(false);
 
@@ -113,7 +113,7 @@ namespace BotLib.Telegram.Client {
                         strPayload = strWriter.ToString();
                     }
 
-                    _logger.LogDebug($"POST {uri} {strPayload}");
+                    _logger.LogDebug($"POST /{method} {strPayload}");
 
                     HttpContent content = new StringContent(strPayload, _encoding, "application/json");
 
